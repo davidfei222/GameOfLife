@@ -25,7 +25,7 @@ public class Tile {
 	public Tile(int x, int y){
 		color = Color.BLACK;
 		state = false;
-		bound = new Rectangle2D.Double(x, y, x+WIDTH, y+WIDTH);
+		bound = new Rectangle2D.Double(x, y, WIDTH, WIDTH);
 	}
 	
 	/**
@@ -49,6 +49,16 @@ public class Tile {
 		g2.setColor(color);
 		g2.draw(bound);
 		g2.fill(bound);
+	}
+	
+	/**
+	 * Check if a given position is inside a tile
+	 * @param  x  The x coordinate of the position
+	 * @param  y  The y coordinate of the position
+	 * @return  true if inside, false if outside
+	 */
+	public boolean isInTile(int x, int y){
+		return bound.contains(x, y);
 	}
 	
 	/**
