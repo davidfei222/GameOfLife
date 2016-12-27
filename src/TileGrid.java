@@ -2,6 +2,7 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import javax.swing.*;
+import java.util.Hashtable;
 
 /**
  * Grid of all the tiles in a JPanel
@@ -14,15 +15,17 @@ public class TileGrid extends JPanel implements MouseListener{
 	private Tile[][] grid;
 	//Whether the grid is active or not (true = active, false = inactive)
 	private boolean active;
+	//Hash table that records active tiles
+	private Hashtable<Integer, Tile> activeTiles;
 	//Constant for the offset between tiles
 	private static final int OFFSET = 10;
 	//Constant for the grid offset relative to the window
-	private static final int GRIDOFFSET = 63;
+	private static final int GRIDOFFSET = 1;
 	//Constants for the size of the panel
-	private static final int WIDTH = 1566;
+	private static final int WIDTH = 1000;
 	private static final int HEIGHT = 630;
 	//Constants for the number of tiles in the grid;
-	private static final int ROWS = 75;
+	private static final int ROWS = 77;
 	private static final int COLS = 150;
 	
 	/**
@@ -31,6 +34,7 @@ public class TileGrid extends JPanel implements MouseListener{
 	public TileGrid(){
 		setSize(WIDTH, HEIGHT);
 		active = true;
+		activeTiles = new Hashtable<Integer, Tile>(225);
 		grid = new Tile[ROWS][COLS];
 		int x = GRIDOFFSET;
 		int y = GRIDOFFSET;
@@ -75,7 +79,9 @@ public class TileGrid extends JPanel implements MouseListener{
 	 * Update the tiles around each tile that is alive
 	 */
 	public void updateTiles(){
-		
+		for(int i = 0; i < activeTiles.size(); i++){
+			
+		}
 	}
 	
 	/**
@@ -108,6 +114,10 @@ public class TileGrid extends JPanel implements MouseListener{
 		
 	}
 	
+	//Private helper method for mouseClicked
+	//Uses binary search to find the row of the tile clicked
+	//Then uses a linear search to find the tile within that row and set it to be alive
+	//Complexity: O(NlogN)
 	private void findTile(int x, int y, int first, int last){
 		if(first >= last){
 			return;
@@ -128,60 +138,14 @@ public class TileGrid extends JPanel implements MouseListener{
 		}
 		
 	}
-	
-	/*private Tile[] findRow(int y, int first, int last){
-		if(first >= last){
-			return null;
-		}
-		int index = (last-first)/2;
-		Tile tile = grid[index][0];
-		if(tile.isInTile(x, y))
-		if(y < tile.getYUpper()){
-			return findRow(y, first, index-1);
-		}
-		else if(y > tile.getYLower()){
-			return findRow(y, index+1, last);
-		}
-		
-	}
-	
-	private Tile findCol(int x, int first, int last, Tile[] row){
-		if(first >= last){
-			return null;
-		}
-		int index = (last-first)/2;
-		Tile tile = row[index];
-		if(x < tile.getXLeft()){
-			return findCol(x, first, index-1, row);
-		}
-		else if(x > tile.getXRight()){
-			return findCol(x, index+1, last, row);
-		}
-		return row[index];
-	}*/
 
 	@Override
-	public void mousePressed(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
-
+	public void mousePressed(MouseEvent e) {}
 	@Override
-	public void mouseReleased(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
-
+	public void mouseReleased(MouseEvent e) {}
 	@Override
-	public void mouseEntered(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
-
+	public void mouseEntered(MouseEvent e) {}
 	@Override
-	public void mouseExited(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void mouseExited(MouseEvent e) {}
 	
 }

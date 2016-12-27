@@ -3,18 +3,29 @@ import java.awt.*;
 
 @SuppressWarnings("serial")
 public class GameOfLife extends JFrame{
+	//The grid of tiles
+	private TileGrid grid;
 	//Constants for the size of the window
-	private static final int WIDTH = 1800;
+	private static final int WIDTH = 1501;
 	private static final int HEIGHT = 900;
 	
+	/**
+	 * Constructor for the game window
+	 */
 	public GameOfLife(){
 		setSize(WIDTH, HEIGHT);
 		setTitle("Conway's Game of Life");
-		TileGrid grid = new TileGrid();
-		grid.setBackground(Color.RED);
+		setResizable(false);
+		//setBackground(Color.RED);
+		grid = new TileGrid();
 		add(grid);
-		
-		
+	}
+	
+	/**
+	 * Update the grid by calling grid's update method
+	 */
+	public void updateGrid(){
+		grid.updateTiles();
 	}
 	
 	/*
@@ -23,7 +34,9 @@ public class GameOfLife extends JFrame{
 	public static void main(String[] args) {
 		GameOfLife game = new GameOfLife();
 		game.setVisible(true);
-
+		while(true){
+			game.updateGrid();
+		}
 	}
 
 }

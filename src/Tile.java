@@ -118,8 +118,17 @@ public class Tile {
 	}
 	
 	/**
+	 * Generates a hashcode for the tile based on its position in the grid
+	 */
+	@Override
+	public int hashCode(){
+		return row+col;
+	}
+	
+	/**
 	 * toString method for debugging purposes
 	 */
+	@Override
 	public String toString(){
 		return Integer.toString(row)+" "+Integer.toString(col);
 	}
