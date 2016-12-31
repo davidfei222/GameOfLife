@@ -2,7 +2,8 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import javax.swing.*;
-import java.util.Hashtable;
+import java.util.HashMap;
+import java.util.ArrayList;
 
 /**
  * Grid of all the tiles in a JPanel
@@ -15,8 +16,8 @@ public class TileGrid extends JPanel implements MouseListener{
 	private Tile[][] grid;
 	//Whether the grid is active or not (true = active, false = inactive)
 	private boolean active;
-	//Hash table that records active tiles
-	private Hashtable<Integer, Tile> activeTiles;
+	//Hash map that records active tiles
+	private HashMap<Integer, Tile> activeTiles;
 	//Constant for the offset between tiles
 	private static final int OFFSET = 10;
 	//Constant for the grid offset relative to the window
@@ -34,7 +35,7 @@ public class TileGrid extends JPanel implements MouseListener{
 	public TileGrid(){
 		setSize(WIDTH, HEIGHT);
 		active = true;
-		activeTiles = new Hashtable<Integer, Tile>(225);
+		activeTiles = new HashMap<Integer, Tile>(225);
 		grid = new Tile[ROWS][COLS];
 		int x = GRIDOFFSET;
 		int y = GRIDOFFSET;
@@ -77,11 +78,43 @@ public class TileGrid extends JPanel implements MouseListener{
 	
 	/**
 	 * Update the tiles around each tile that is alive
+	 * 
+	 * Rules of the game:
+	 * Any live cell with fewer than two live neighbours dies, as if caused by underpopulation.
+	 * Any live cell with two or three live neighbours lives on to the next generation.
+	 * Any live cell with more than three live neighbours dies, as if by overpopulation.
+	 * Any dead cell with exactly three live neighbours becomes a live cell, as if by reproduction.
 	 */
 	public void updateTiles(){
-		for(int i = 0; i < activeTiles.size(); i++){
-			
+		//if(!active){
+		for(int x = 0; x < grid.length; x++){
+			for(int y = 0; y < grid[x].length; y++){
+				int numAlive = 0;
+				ArrayList<Tile> neighbors = new ArrayList<Tile>();
+				neighbors.add(grid[x][y-1]);
+				neighbors.add(grid[x-1][y-1]);
+				neighbors.add(grid[x+1][y-1]);
+				neighbors.add(grid[x-1][y]);
+				neighbors.add(grid[x+1][y]);
+				neighbors.add(grid[x][y+1]);
+				neighbors.add(grid[x-1][y+1]);
+				neighbors.add(grid[x+1][y+1]);
+				for(int i = 0; i < neighbors.size(); i++){
+					if(neighbors.get(i).isAlive()){
+						numAlive++;
+					}
+				}
+				if(grid[x][y].isAlive() && (numAlive < 2 || numAlive > 3)){
+					grid[x][y].setState(false);
+					repaint(grid[x][y].getXLeft(), grid[x][y].getYUpper(), OFFSET, OFFSET);
+				}
+				else if(!grid[x][y].isAlive() && numAlive == 3){
+					grid[x][y].setState(true);
+					repaint(grid[x][y].getXLeft(), grid[x][y].getYUpper(), OFFSET, OFFSET);
+				}
+			}	
 		}
+		//}
 	}
 	
 	/**
@@ -104,12 +137,12 @@ public class TileGrid extends JPanel implements MouseListener{
 
 	@Override
 	public void mouseClicked(MouseEvent e) {
-		// TODO Auto-generated method stub
-		if(active){
+		if(active){ 
 			int x = e.getX();
 			int y = e.getY();
-			findTile(x, y, 0, grid.length);
-			repaint();
+			Tile tile = findTile(x, y, 0, grid.length);
+			repaint(tile.getXLeft(), tile.getYUpper(), OFFSET, OFFSET);
+			activeTiles.put(tile.hashCode(), tile);
 		}
 		
 	}
@@ -118,24 +151,26 @@ public class TileGrid extends JPanel implements MouseListener{
 	//Uses binary search to find the row of the tile clicked
 	//Then uses a linear search to find the tile within that row and set it to be alive
 	//Complexity: O(NlogN)
-	private void findTile(int x, int y, int first, int last){
+	private Tile findTile(int x, int y, int first, int last){
 		if(first >= last){
-			return;
+			return null;
 		}
 		int index = (first+last)/2;
 		if(y >= grid[index][0].getYUpper() && y <= grid[index][0].getYLower()){
 			for(int i = 0; i < grid[index].length; i++){
 				if(grid[index][i].isInTile(x, y)){
 					grid[index][i].setState(true);
+					return grid[index][i];
 				}
 			}
 		}
 		if(y < grid[index][0].getYUpper()){
-			findTile(x, y, first, index);
+			return findTile(x, y, first, index);
 		}
 		else if(y > grid[index][0].getYUpper()){
-			findTile(x, y, index+1, last);
+			return findTile(x, y, index+1, last);
 		}
+		return null;
 		
 	}
 
