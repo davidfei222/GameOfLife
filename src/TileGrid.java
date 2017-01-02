@@ -15,6 +15,7 @@ public class TileGrid extends JPanel implements MouseListener{
 	//2D array containing the grid of tiles
 	private Tile[][] grid;
 	//Whether the grid is active or not (true = active, false = inactive)
+	//"Active" means the grid is in setup mode
 	private boolean active;
 	//Hash map that records active tiles
 	private HashMap<Integer, Tile> activeTiles;
@@ -86,35 +87,35 @@ public class TileGrid extends JPanel implements MouseListener{
 	 * Any dead cell with exactly three live neighbours becomes a live cell, as if by reproduction.
 	 */
 	public void updateTiles(){
-		//if(!active){
-		for(int x = 0; x < grid.length; x++){
-			for(int y = 0; y < grid[x].length; y++){
-				int numAlive = 0;
-				ArrayList<Tile> neighbors = new ArrayList<Tile>();
-				neighbors.add(grid[x][y-1]);
-				neighbors.add(grid[x-1][y-1]);
-				neighbors.add(grid[x+1][y-1]);
-				neighbors.add(grid[x-1][y]);
-				neighbors.add(grid[x+1][y]);
-				neighbors.add(grid[x][y+1]);
-				neighbors.add(grid[x-1][y+1]);
-				neighbors.add(grid[x+1][y+1]);
-				for(int i = 0; i < neighbors.size(); i++){
-					if(neighbors.get(i).isAlive()){
-						numAlive++;
+		if(!active){
+			for(int x = 0; x < grid.length; x++){
+				for(int y = 0; y < grid[x].length; y++){
+					int numAlive = 0;
+					ArrayList<Tile> neighbors = new ArrayList<Tile>();
+					neighbors.add(grid[x][y-1]);
+					neighbors.add(grid[x-1][y-1]);
+					neighbors.add(grid[x+1][y-1]);
+					neighbors.add(grid[x-1][y]);
+					neighbors.add(grid[x+1][y]);
+					neighbors.add(grid[x][y+1]);
+					neighbors.add(grid[x-1][y+1]);
+					neighbors.add(grid[x+1][y+1]);
+					for(int i = 0; i < neighbors.size(); i++){
+						if(neighbors.get(i).isAlive()){
+							numAlive++;
+						}
 					}
-				}
-				if(grid[x][y].isAlive() && (numAlive < 2 || numAlive > 3)){
-					grid[x][y].setState(false);
-					repaint(grid[x][y].getXLeft(), grid[x][y].getYUpper(), OFFSET, OFFSET);
-				}
-				else if(!grid[x][y].isAlive() && numAlive == 3){
-					grid[x][y].setState(true);
-					repaint(grid[x][y].getXLeft(), grid[x][y].getYUpper(), OFFSET, OFFSET);
-				}
-			}	
+					if(grid[x][y].isAlive() && (numAlive < 2 || numAlive > 3)){
+						grid[x][y].setState(false);
+						repaint(grid[x][y].getXLeft(), grid[x][y].getYUpper(), OFFSET, OFFSET);
+					}
+					else if(!grid[x][y].isAlive() && numAlive == 3){
+						grid[x][y].setState(true);
+						repaint(grid[x][y].getXLeft(), grid[x][y].getYUpper(), OFFSET, OFFSET);
+					}
+				}	
+			}
 		}
-		//}
 	}
 	
 	/**
@@ -131,18 +132,32 @@ public class TileGrid extends JPanel implements MouseListener{
 		}
 	}
 	
+	/**
+	 * Return the state of the grid
+	 * 
+	 * @return  true if active and false if not
+	 */
+	public boolean getState(){
+		return active;
+	}
+	
 	////////////////////////////////////
 	// METHODS FOR THE MOUSE LISTENER //
 	////////////////////////////////////
 
 	@Override
 	public void mouseClicked(MouseEvent e) {
-		if(active){ 
-			int x = e.getX();
-			int y = e.getY();
-			Tile tile = findTile(x, y, 0, grid.length);
-			repaint(tile.getXLeft(), tile.getYUpper(), OFFSET, OFFSET);
-			activeTiles.put(tile.hashCode(), tile);
+		if(active){
+			try{
+				int x = e.getX();
+				int y = e.getY();
+				Tile tile = findTile(x, y, 0, grid.length);
+				repaint(tile.getXLeft(), tile.getYUpper(), OFFSET, OFFSET);
+				activeTiles.put(tile.hashCode(), tile);
+			}
+			catch(NullPointerException excp){
+				System.out.println("Invalid location");
+			}
 		}
 		
 	}

@@ -28,13 +28,21 @@ public class GameOfLife extends JFrame{
 		grid.updateTiles();
 	}
 	
+	/**
+	 * Return the state of the grid in the window
+	 */
+	public boolean isActive(){
+		return grid.getState();
+	}
+	
 	/*
 	 * Main method
 	 */	
 	public static void main(String[] args) {
 		GameOfLife game = new GameOfLife();
 		game.setVisible(true);
-		while(true){
+		while(!game.isActive()){
+			System.out.println("entered loop");
 			game.updateGrid();
 		}
 	}
