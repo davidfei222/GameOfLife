@@ -49,6 +49,7 @@ public class TileGrid extends JPanel implements MouseListener{
 		y += OFFSET;
 		}
 		addMouseListener(this);
+		//setCursor(new Cursor(Cursor.HAND_CURSOR));
 	}
 	
 	/**
@@ -72,9 +73,10 @@ public class TileGrid extends JPanel implements MouseListener{
 				grid[i][j] = new Tile(x, y, i, j);
 				x += OFFSET;
 			}
-		x = GRIDOFFSET;
-		y += OFFSET;
+			x = GRIDOFFSET;
+			y += OFFSET;
 		}
+		repaint();
 	}
 	
 	/**
@@ -88,8 +90,8 @@ public class TileGrid extends JPanel implements MouseListener{
 	 */
 	public void updateTiles(){
 		if(!active){
-			for(int x = 0; x < grid.length; x++){
-				for(int y = 0; y < grid[x].length; y++){
+			for(int x = 1; x < grid.length-1; x++){
+				for(int y = 1; y < grid[x].length-1; y++){
 					int numAlive = 0;
 					ArrayList<Tile> neighbors = new ArrayList<Tile>();
 					neighbors.add(grid[x][y-1]);
@@ -107,14 +109,16 @@ public class TileGrid extends JPanel implements MouseListener{
 					}
 					if(grid[x][y].isAlive() && (numAlive < 2 || numAlive > 3)){
 						grid[x][y].setState(false);
-						repaint(grid[x][y].getXLeft(), grid[x][y].getYUpper(), OFFSET, OFFSET);
+						paintImmediately(grid[x][y].getXLeft(), grid[x][y].getYUpper(), OFFSET, OFFSET);
 					}
 					else if(!grid[x][y].isAlive() && numAlive == 3){
 						grid[x][y].setState(true);
-						repaint(grid[x][y].getXLeft(), grid[x][y].getYUpper(), OFFSET, OFFSET);
+						paintImmediately(grid[x][y].getXLeft(), grid[x][y].getYUpper(), OFFSET, OFFSET);
 					}
+					
 				}	
 			}
+			//paintImmediately(0, 0, WIDTH, HEIGHT);
 		}
 	}
 	

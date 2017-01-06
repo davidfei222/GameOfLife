@@ -5,6 +5,8 @@ import java.awt.*;
 public class GameOfLife extends JFrame{
 	//The grid of tiles
 	private TileGrid grid;
+	//Button control panel
+	private ControlPanel controls;
 	//Constants for the size of the window
 	private static final int WIDTH = 1501;
 	private static final int HEIGHT = 900;
@@ -16,9 +18,12 @@ public class GameOfLife extends JFrame{
 		setSize(WIDTH, HEIGHT);
 		setTitle("Conway's Game of Life");
 		setResizable(false);
+		getContentPane().setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
 		//setBackground(Color.RED);
 		grid = new TileGrid();
 		add(grid);
+		controls = new ControlPanel(grid);
+		add(controls);
 	}
 	
 	/**
@@ -41,10 +46,6 @@ public class GameOfLife extends JFrame{
 	public static void main(String[] args) {
 		GameOfLife game = new GameOfLife();
 		game.setVisible(true);
-		while(!game.isActive()){
-			System.out.println("entered loop");
-			game.updateGrid();
-		}
 	}
 
 }
