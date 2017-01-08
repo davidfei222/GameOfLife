@@ -30,7 +30,7 @@ public class TileGrid extends JPanel implements MouseListener, Runnable{
 	private static final int GRIDOFFSET = 1;
 	//Constants for the size of the panel
 	private static final int WIDTH = 1501;
-	private static final int HEIGHT = 900;
+	private static final int HEIGHT = 780;
 	//Constants for the number of tiles in the grid;
 	private static final int ROWS = 77;
 	private static final int COLS = 150;
@@ -40,6 +40,7 @@ public class TileGrid extends JPanel implements MouseListener, Runnable{
 	 */
 	public TileGrid(){
 		setSize(WIDTH, HEIGHT);
+		setCursor(new Cursor(Cursor.HAND_CURSOR));
 		active = true;
 		activeTiles = new HashMap<Integer, Tile>(225);
 		grid = new Tile[ROWS][COLS];
@@ -55,7 +56,7 @@ public class TileGrid extends JPanel implements MouseListener, Runnable{
 		}
 		addMouseListener(this);
 		animation = new Thread(this, "animation");
-		//setCursor(new Cursor(Cursor.HAND_CURSOR));
+		
 	}
 	
 	/**
@@ -86,13 +87,34 @@ public class TileGrid extends JPanel implements MouseListener, Runnable{
 	}
 	
 	/**
+	 * Sets a preset for the starting state 
+	 * 
+	 * @param  preset  String representing the desired preset
+	 */
+	public void setPreset(String preset){
+		if(preset.equals("Glider")){
+			grid[37][72].setState(true);
+			grid[37][73].setState(true);
+			grid[37][74].setState(true);
+			grid[36][74].setState(true);
+			grid[35][73].setState(true);
+			repaint();
+		}
+		else if(preset.equals("Small Explosion")){
+			grid[39][72].setState(true);
+			grid[38][72].setState(true);
+			grid[38][73].setState(true);
+			grid[37][73].setState(true);
+			grid[38][74].setState(true);
+			grid[39][74].setState(true);
+			grid[40][73].setState(true);
+			repaint();
+		}
+	}
+	
+	/**
 	 * Update the tiles around each tile that is alive (uses a separate thread for calculating each new generation)
 	 * 
-	 * Rules of the game:
-	 * Any live cell with fewer than two live neighbours dies, as if caused by underpopulation.
-	 * Any live cell with two or three live neighbours lives on to the next generation.
-	 * Any live cell with more than three live neighbours dies, as if by overpopulation.
-	 * Any dead cell with exactly three live neighbours becomes a live cell, as if by reproduction.
 	 */
 	public void updateTiles(){
 		animation.run();
@@ -184,6 +206,12 @@ public class TileGrid extends JPanel implements MouseListener, Runnable{
 	
 	/**
 	 * Calculates each new generation in a separate thread from the graphical rendering to increase efficiency
+	 * 
+	 * Rules of the game:
+	 * Any live cell with fewer than two live neighbours dies, as if caused by underpopulation.
+	 * Any live cell with two or three live neighbours lives on to the next generation.
+	 * Any live cell with more than three live neighbours dies, as if by overpopulation.
+	 * Any dead cell with exactly three live neighbours becomes a live cell, as if by reproduction.
 	 */
 	@Override
 	public void run() {
@@ -192,17 +220,17 @@ public class TileGrid extends JPanel implements MouseListener, Runnable{
 				for(int y = 1; y < grid[x].length-1; y++){
 					int numAlive = 0;
 					Tile tile = grid[x][y];
-					ArrayList<Tile> neighbors = new ArrayList<Tile>();
-					neighbors.add(grid[x][y-1]);
-					neighbors.add(grid[x-1][y-1]);
-					neighbors.add(grid[x+1][y-1]);
-					neighbors.add(grid[x-1][y]);
-					neighbors.add(grid[x+1][y]);
-					neighbors.add(grid[x][y+1]);
-					neighbors.add(grid[x-1][y+1]);
-					neighbors.add(grid[x+1][y+1]);
-					for(int i = 0; i < neighbors.size(); i++){
-						if(neighbors.get(i).isAlive()){
+					Tile[] neighbors = new Tile[8];
+					neighbors[0] = grid[x][y-1];
+					neighbors[1] = grid[x-1][y-1];
+					neighbors[2] = grid[x+1][y-1];
+					neighbors[3] = grid[x-1][y];
+					neighbors[4] = grid[x+1][y];
+					neighbors[5] = grid[x][y+1];
+					neighbors[6] = grid[x-1][y+1];
+					neighbors[7] = grid[x+1][y+1];
+					for(int i = 0; i < neighbors.length; i++){
+						if(neighbors[i].isAlive()){
 							numAlive++;
 						}
 					}

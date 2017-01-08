@@ -3,17 +3,19 @@ import java.awt.event.*;
 import javax.swing.*;
 
 @SuppressWarnings("serial")
-public class ControlPanel extends JPanel implements ActionListener{
+public class ControlPanel extends JPanel implements ActionListener, ItemListener{
 	//The grid being controlled
 	private TileGrid grid;
 	//Start button
 	private JButton start;
 	//Reset button
 	private JButton reset;
+	//Drop-down menu for presets
+	private JComboBox<String> presets;
 	
 	//Constants for size of panel
 	private static final int WIDTH = 1501;
-	private static final int HEIGHT = 100;
+	private static final int HEIGHT = 120;
 	
 	/**
 	 * Constructor for the button control panel
@@ -22,12 +24,17 @@ public class ControlPanel extends JPanel implements ActionListener{
 	 */
 	public ControlPanel(TileGrid grid){
 		setSize(WIDTH, HEIGHT);
+		setBackground(Color.RED);
 		start = new JButton("Start game");
 		start.addActionListener(this);
 		add(start);
-		reset = new JButton("Reset grid");
+		reset = new JButton("Reset");
 		reset.addActionListener(this);
 		add(reset);
+		String[] presetList = {"Select a preset", "Glider", "Small Explosion"};
+		presets = new JComboBox<String>(presetList);
+		presets.addItemListener(this);
+		add(presets);
 		this.grid = grid;
 	}
 	
@@ -36,9 +43,7 @@ public class ControlPanel extends JPanel implements ActionListener{
 	 */
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		// TODO Auto-generated method stub
 		if(e.getActionCommand().equals("Start game")){
-			//System.out.println("start");
 			grid.setActive(false);
 			for(int i = 0; i < 10; i++){
 				grid.updateTiles();
@@ -50,10 +55,25 @@ public class ControlPanel extends JPanel implements ActionListener{
 				}*/
 			}
 		}
-		else if(e.getActionCommand().equals("Reset grid")){
-			//System.out.println("reset");
+		else if(e.getActionCommand().equals("Reset")){
 			grid.resetTiles();
 			grid.setActive(true);
+		}
+	}
+	
+	/**
+	 * Event listener for drop down menu
+	 */
+	@Override
+	public void itemStateChanged(ItemEvent e) {
+		if(grid.getState()){
+			grid.resetTiles();
+			if(e.getItem().equals("Glider")){
+				grid.setPreset("Glider");
+			}
+			if(e.getItem().equals("Small Explosion")){
+				grid.setPreset("Small Explosion");
+			}
 		}
 	}
 }

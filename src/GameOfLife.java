@@ -7,6 +7,9 @@ public class GameOfLife extends JFrame{
 	private TileGrid grid;
 	//Button control panel
 	private ControlPanel controls;
+	//Layout manager
+	private BoxLayout layout;
+	
 	//Constants for the size of the window
 	private static final int WIDTH = 1501;
 	private static final int HEIGHT = 900;
@@ -18,26 +21,15 @@ public class GameOfLife extends JFrame{
 		setSize(WIDTH, HEIGHT);
 		setTitle("Conway's Game of Life");
 		setResizable(false);
-		getContentPane().setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
-		//setBackground(Color.RED);
+		setDefaultCloseOperation(EXIT_ON_CLOSE);
+		layout = new BoxLayout(getContentPane(), BoxLayout.Y_AXIS);
+		getContentPane().setLayout(layout);
 		grid = new TileGrid();
+		grid.setMaximumSize(new Dimension(WIDTH, HEIGHT-128));
 		add(grid);
 		controls = new ControlPanel(grid);
+		controls.setMaximumSize(new Dimension(WIDTH, 128));
 		add(controls);
-	}
-	
-	/**
-	 * Update the grid by calling grid's update method
-	 */
-	public void updateGrid(){
-		grid.updateTiles();
-	}
-	
-	/**
-	 * Return the state of the grid in the window
-	 */
-	public boolean isActive(){
-		return grid.getState();
 	}
 	
 	/*
