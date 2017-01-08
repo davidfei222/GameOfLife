@@ -21,6 +21,7 @@ public class Tile {
 	//The row and column of the tile (for quick access in the 2D array)
 	private int row;
 	private int col;
+	
 	//Dimensions for the rectangle
 	private static final int WIDTH = 8;
 	
@@ -53,8 +54,10 @@ public class Tile {
 	 */
 	public void setState(boolean state){
 		this.state = state;
-		if(this.state) color = Color.GREEN;
-		else color = Color.BLACK;
+		if(this.state) 
+			color = Color.GREEN;
+		else 
+			color = Color.BLACK;
 	}
 	
 	/**

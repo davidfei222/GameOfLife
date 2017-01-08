@@ -7,11 +7,13 @@ import java.util.ArrayList;
 
 /**
  * Grid of all the tiles in a JPanel
+ * Uses Mouselistener to allow the user to set up by clicking on tiles
+ * Uses multithreading to make rendering each generation more efficient
  * @author David
  *
  */
 @SuppressWarnings("serial")
-public class TileGrid extends JPanel implements MouseListener{
+public class TileGrid extends JPanel implements MouseListener, Runnable{
 	//2D array containing the grid of tiles
 	private Tile[][] grid;
 	//Whether the grid is active or not (true = active, false = inactive)
@@ -19,13 +21,16 @@ public class TileGrid extends JPanel implements MouseListener{
 	private boolean active;
 	//Hash map that records active tiles
 	private HashMap<Integer, Tile> activeTiles;
+	//Thread for animation of tile changes
+	private Thread animation;
+	
 	//Constant for the offset between tiles
 	private static final int OFFSET = 10;
 	//Constant for the grid offset relative to the window
 	private static final int GRIDOFFSET = 1;
 	//Constants for the size of the panel
-	private static final int WIDTH = 1000;
-	private static final int HEIGHT = 630;
+	private static final int WIDTH = 1501;
+	private static final int HEIGHT = 900;
 	//Constants for the number of tiles in the grid;
 	private static final int ROWS = 77;
 	private static final int COLS = 150;
@@ -49,6 +54,7 @@ public class TileGrid extends JPanel implements MouseListener{
 		y += OFFSET;
 		}
 		addMouseListener(this);
+		animation = new Thread(this, "animation");
 		//setCursor(new Cursor(Cursor.HAND_CURSOR));
 	}
 	
@@ -80,7 +86,7 @@ public class TileGrid extends JPanel implements MouseListener{
 	}
 	
 	/**
-	 * Update the tiles around each tile that is alive
+	 * Update the tiles around each tile that is alive (uses a separate thread for calculating each new generation)
 	 * 
 	 * Rules of the game:
 	 * Any live cell with fewer than two live neighbours dies, as if caused by underpopulation.
@@ -89,37 +95,8 @@ public class TileGrid extends JPanel implements MouseListener{
 	 * Any dead cell with exactly three live neighbours becomes a live cell, as if by reproduction.
 	 */
 	public void updateTiles(){
-		if(!active){
-			for(int x = 1; x < grid.length-1; x++){
-				for(int y = 1; y < grid[x].length-1; y++){
-					int numAlive = 0;
-					ArrayList<Tile> neighbors = new ArrayList<Tile>();
-					neighbors.add(grid[x][y-1]);
-					neighbors.add(grid[x-1][y-1]);
-					neighbors.add(grid[x+1][y-1]);
-					neighbors.add(grid[x-1][y]);
-					neighbors.add(grid[x+1][y]);
-					neighbors.add(grid[x][y+1]);
-					neighbors.add(grid[x-1][y+1]);
-					neighbors.add(grid[x+1][y+1]);
-					for(int i = 0; i < neighbors.size(); i++){
-						if(neighbors.get(i).isAlive()){
-							numAlive++;
-						}
-					}
-					if(grid[x][y].isAlive() && (numAlive < 2 || numAlive > 3)){
-						grid[x][y].setState(false);
-						paintImmediately(grid[x][y].getXLeft(), grid[x][y].getYUpper(), OFFSET, OFFSET);
-					}
-					else if(!grid[x][y].isAlive() && numAlive == 3){
-						grid[x][y].setState(true);
-						paintImmediately(grid[x][y].getXLeft(), grid[x][y].getYUpper(), OFFSET, OFFSET);
-					}
-					
-				}	
-			}
-			//paintImmediately(0, 0, WIDTH, HEIGHT);
-		}
+		animation.run();
+		paintImmediately(0, 0, WIDTH, HEIGHT);
 	}
 	
 	/**
@@ -189,8 +166,7 @@ public class TileGrid extends JPanel implements MouseListener{
 		else if(y > grid[index][0].getYUpper()){
 			return findTile(x, y, index+1, last);
 		}
-		return null;
-		
+		return null;	
 	}
 
 	@Override
@@ -201,5 +177,44 @@ public class TileGrid extends JPanel implements MouseListener{
 	public void mouseEntered(MouseEvent e) {}
 	@Override
 	public void mouseExited(MouseEvent e) {}
+	
+	////////////////////////
+	//METHODS FOR RUNNABLE//
+	////////////////////////
+	
+	/**
+	 * Calculates each new generation in a separate thread from the graphical rendering to increase efficiency
+	 */
+	@Override
+	public void run() {
+		if(!active){
+			for(int x = 1; x < grid.length-1; x++){
+				for(int y = 1; y < grid[x].length-1; y++){
+					int numAlive = 0;
+					Tile tile = grid[x][y];
+					ArrayList<Tile> neighbors = new ArrayList<Tile>();
+					neighbors.add(grid[x][y-1]);
+					neighbors.add(grid[x-1][y-1]);
+					neighbors.add(grid[x+1][y-1]);
+					neighbors.add(grid[x-1][y]);
+					neighbors.add(grid[x+1][y]);
+					neighbors.add(grid[x][y+1]);
+					neighbors.add(grid[x-1][y+1]);
+					neighbors.add(grid[x+1][y+1]);
+					for(int i = 0; i < neighbors.size(); i++){
+						if(neighbors.get(i).isAlive()){
+							numAlive++;
+						}
+					}
+					if(tile.isAlive() && numAlive < 2 || numAlive > 3){
+						tile.setState(false);
+					}
+					else if(!tile.isAlive() && numAlive == 3){
+						tile.setState(true);
+					}
+				}	
+			}
+		}
+	}
 	
 }
