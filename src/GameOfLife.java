@@ -12,7 +12,7 @@ public class GameOfLife extends JFrame{
 	
 	//Constants for the size of the window
 	private static final int WIDTH = 1501;
-	private static final int HEIGHT = 900;
+	private static final int HEIGHT = 825;
 	
 	/**
 	 * Constructor for the game window
@@ -25,10 +25,10 @@ public class GameOfLife extends JFrame{
 		layout = new BoxLayout(getContentPane(), BoxLayout.Y_AXIS);
 		getContentPane().setLayout(layout);
 		grid = new TileGrid();
-		grid.setMaximumSize(new Dimension(WIDTH, HEIGHT-128));
+		grid.setMaximumSize(new Dimension(WIDTH, HEIGHT-43));
 		add(grid);
 		controls = new ControlPanel(grid);
-		controls.setMaximumSize(new Dimension(WIDTH, 128));
+		controls.setMaximumSize(new Dimension(WIDTH, 43));
 		add(controls);
 	}
 	

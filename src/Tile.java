@@ -48,16 +48,23 @@ public class Tile {
 	
 	/**
 	 * Sets the state of the tile (true = alive, false = dead)
-	 * and changes the color correspondingly
 	 * 
 	 * @param  state  The new state of the tile
 	 */
 	public void setState(boolean state){
 		this.state = state;
-		if(this.state) 
+	}
+	
+	/**
+	 * Sets the color of the tile based on its state (green = alive, black = dead)
+	 */
+	public void setColor(){
+		if(this.state){ 
 			color = Color.GREEN;
-		else 
+		}
+		else{ 
 			color = Color.BLACK;
+		}
 	}
 	
 	/**
@@ -133,7 +140,14 @@ public class Tile {
 	 */
 	@Override
 	public String toString(){
-		return "("+Integer.toString(row)+", "+Integer.toString(col)+")";
+		int state;
+		if(this.state){
+			state = 1;
+		}
+		else{
+			state = 0;
+		}
+		return " "+state+" ";
 	}
 	
 }

@@ -130,6 +130,7 @@ public class TileGrid extends JPanel implements MouseListener, Runnable{
 		Graphics2D g2 = (Graphics2D) g;
 		for(int i = 0; i < grid.length; i++){
 			for(int j = 0; j < grid[i].length; j++){
+				grid[i][j].setColor();
 				grid[i][j].drawTile(g2);
 			}
 		}
@@ -142,6 +143,20 @@ public class TileGrid extends JPanel implements MouseListener, Runnable{
 	 */
 	public boolean getState(){
 		return active;
+	}
+	
+	/**
+	 * toString method for debugging purposes
+	 */
+	public String toString(){
+		String output = "";
+		for(int i = 0; i < grid.length; i++){
+			for(int j = 0; j < grid[i].length; j++){
+				output += grid[i][j].toString();
+			}
+			output += "\n";
+		}
+		return output;
 	}
 	
 	////////////////////////////////////
@@ -216,6 +231,17 @@ public class TileGrid extends JPanel implements MouseListener, Runnable{
 	@Override
 	public void run() {
 		if(!active){
+			Tile[][] nextGen = new Tile[ROWS][COLS];
+			int x1 = GRIDOFFSET;
+			int y1 = GRIDOFFSET;
+			for(int i = 0; i < grid.length; i++){
+				for(int j = 0; j < grid[i].length; j++){
+					nextGen[i][j] = new Tile(x1, y1, i, j);
+					x1 += OFFSET;
+				}
+			x1 = GRIDOFFSET;
+			y1 += OFFSET;
+			}
 			for(int x = 1; x < grid.length-1; x++){
 				for(int y = 1; y < grid[x].length-1; y++){
 					int numAlive = 0;
@@ -234,14 +260,15 @@ public class TileGrid extends JPanel implements MouseListener, Runnable{
 							numAlive++;
 						}
 					}
-					if(tile.isAlive() && numAlive < 2 || numAlive > 3){
-						tile.setState(false);
+					if(numAlive == 3 || (tile.isAlive() && numAlive == 2)){
+						nextGen[x][y].setState(true);
 					}
-					else if(!tile.isAlive() && numAlive == 3){
-						tile.setState(true);
+					else{
+						nextGen[x][y].setState(false);
 					}
 				}	
 			}
+			grid = nextGen;
 		}
 	}
 	

@@ -24,7 +24,7 @@ public class ControlPanel extends JPanel implements ActionListener, ItemListener
 	 */
 	public ControlPanel(TileGrid grid){
 		setSize(WIDTH, HEIGHT);
-		setBackground(Color.RED);
+		//setBackground(Color.RED);
 		start = new JButton("Start game");
 		start.addActionListener(this);
 		add(start);
@@ -45,15 +45,14 @@ public class ControlPanel extends JPanel implements ActionListener, ItemListener
 	public void actionPerformed(ActionEvent e) {
 		if(e.getActionCommand().equals("Start game")){
 			grid.setActive(false);
-			for(int i = 0; i < 10; i++){
-				grid.updateTiles();
-				/*try{
-					Thread.sleep(200);
+			grid.updateTiles();
+				//System.out.println(grid);
+				try{
+					Thread.sleep(0);
 				}
 				catch(Exception exc){
 					exc.printStackTrace();
-				}*/
-			}
+				}
 		}
 		else if(e.getActionCommand().equals("Reset")){
 			grid.resetTiles();
