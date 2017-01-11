@@ -13,7 +13,7 @@ import java.util.ArrayList;
  *
  */
 @SuppressWarnings("serial")
-public class TileGrid extends JPanel implements MouseListener, Runnable{
+public class TileGrid extends JPanel implements MouseListener, Runnable {
 	//2D array containing the grid of tiles
 	private Tile[][] grid;
 	//Whether the grid is active or not (true = active, false = inactive)

@@ -2,7 +2,7 @@ import javax.swing.*;
 import java.awt.*;
 
 @SuppressWarnings("serial")
-public class GameOfLife extends JFrame{
+public class GameOfLife extends JFrame {
 	//The grid of tiles
 	private TileGrid grid;
 	//Button control panel
