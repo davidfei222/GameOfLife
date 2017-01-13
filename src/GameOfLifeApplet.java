@@ -1,6 +1,6 @@
 import java.applet.*;
-import java.awt.*;
 
+@SuppressWarnings("serial")
 public class GameOfLifeApplet extends Applet{
 	@Override
 	public void init(){
