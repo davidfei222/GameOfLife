@@ -22,6 +22,8 @@ public class TileGrid extends JPanel implements MouseListener, Runnable {
 	private HashMap<Integer, Tile> activeTiles;
 	//Thread for animation of tile changes
 	private Thread animation;
+	//Number of iterations to run the animation
+	private int iterations;
 	
 	//Constant for the offset between tiles
 	private static final int OFFSET = 10;
@@ -55,16 +57,25 @@ public class TileGrid extends JPanel implements MouseListener, Runnable {
 		}
 		addMouseListener(this);
 		animation = new Thread(this, "animation");
-		
+		iterations = 50;
 	}
 	
 	/**
 	 * Set the grid as active or inactive
 	 * 
-	 * @param state  boolean for the new state
+	 * @param  state  boolean for the new state
 	 */
 	public void setActive(boolean state){
 		active = state;
+	}
+	
+	/**
+	 * Sets the number of iterations to run the animation
+	 * 
+	 * @param  itrs  number of iterations 
+	 */
+	public void setIterations(int itrs){
+		iterations = itrs;
 	}
 	
 	/**
@@ -109,15 +120,24 @@ public class TileGrid extends JPanel implements MouseListener, Runnable {
 			grid[40][73].setState(true);
 			repaint();
 		}
+		else if(preset.equals("Gosper Glider Gun")){
+			grid[24][40].setState(true);
+			grid[24][41].setState(true);
+			grid[25][40].setState(true);
+			grid[25][41].setState(true);
+			
+		}
 	}
 	
 	/**
 	 * Update the tiles around each tile that is alive (uses a separate thread for calculating each new generation)
 	 * 
+	 * 
 	 */
 	public void updateTiles(){
-		animation.run();
-		paintImmediately(0, 0, WIDTH, HEIGHT);
+		if(!animation.isInterrupted()){
+			animation.start();
+		}
 	}
 	
 	/**
@@ -229,85 +249,97 @@ public class TileGrid extends JPanel implements MouseListener, Runnable {
 	 */
 	@Override
 	public void run() {
+		setActive(false);
 		if(!active){
-			//Create a new grid to represent the next generation
-			Tile[][] nextGen = new Tile[ROWS][COLS];
-			int x1 = GRIDOFFSET;
-			int y1 = GRIDOFFSET;
-			for(int i = 0; i < grid.length; i++){
-				for(int j = 0; j < grid[i].length; j++){
-					nextGen[i][j] = new Tile(x1, y1, i, j);
-					x1 += OFFSET;
+			for(int k = 0; k < iterations; k++){
+				//Create a new grid to represent the next generation
+				Tile[][] nextGen = new Tile[ROWS][COLS];
+				int x1 = GRIDOFFSET;
+				int y1 = GRIDOFFSET;
+				for(int i = 0; i < grid.length; i++){
+					for(int j = 0; j < grid[i].length; j++){
+						nextGen[i][j] = new Tile(x1, y1, i, j);
+						x1 += OFFSET;
+					}
+				x1 = GRIDOFFSET;
+				y1 += OFFSET;
 				}
-			x1 = GRIDOFFSET;
-			y1 += OFFSET;
-			}
-			
-			//Check each tile in the grid and modifies its status based on its neighbors
-			for(int y = 0; y < grid.length; y++){
-				for(int x = 0; x < grid[y].length; x++){
-					int numAlive = 0;
-					int eastX;
-					int westX;
-					int northY;
-					int southY;
-					Tile tile = grid[y][x];
-					Tile[] neighbors = new Tile[8];
-					
-					//Handling boundary cases (edges of the grid)
-					if(y-1 < 0){
-						northY = grid.length-1;
-					}
-					else{
-						northY = y-1;
-					}
-					if(y+1 > grid.length-1){
-						southY = 0;
-					}
-					else{
-						southY = y+1;
-					}
-					if(x-1 < 0){
-						westX = grid[y].length-1;
-					}
-					else{
-						westX = x-1;
-					}
-					if(x+1 > grid[y].length-1){
-						eastX = 0;
-					}
-					else{
-						eastX = x+1;
-					}
-					
-					//Add all neighboring tiles of the current tile to an array
-					//Count all of the ones that are alive
-					neighbors[0] = grid[y][westX];
-					neighbors[1] = grid[northY][westX];
-					neighbors[2] = grid[southY][westX];
-					neighbors[3] = grid[northY][x];
-					neighbors[4] = grid[southY][x];
-					neighbors[5] = grid[y][eastX];
-					neighbors[6] = grid[northY][eastX];
-					neighbors[7] = grid[southY][eastX];
-					for(int i = 0; i < neighbors.length; i++){
-						if(neighbors[i].isAlive()){
-							numAlive++;
+				
+				//Check each tile in the grid and modifies its status based on its neighbors
+				for(int y = 0; y < grid.length; y++){
+					for(int x = 0; x < grid[y].length; x++){
+						int numAlive = 0;
+						int eastX;
+						int westX;
+						int northY;
+						int southY;
+						Tile tile = grid[y][x];
+						Tile[] neighbors = new Tile[8];
+						
+						//Handling boundary cases (edges of the grid)
+						if(y-1 < 0){
+							northY = grid.length-1;
 						}
-					}
-					
-					//Modify the current tile based on the game rules
-					if(numAlive == 3 || (tile.isAlive() && numAlive == 2)){
-						nextGen[y][x].setState(true);
-					}
-					else{
-						nextGen[y][x].setState(false);
-					}
-				}	
+						else{
+							northY = y-1;
+						}
+						if(y+1 > grid.length-1){
+							southY = 0;
+						}
+						else{
+							southY = y+1;
+						}
+						if(x-1 < 0){
+							westX = grid[y].length-1;
+						}
+						else{
+							westX = x-1;
+						}
+						if(x+1 > grid[y].length-1){
+							eastX = 0;
+						}
+						else{
+							eastX = x+1;
+						}
+						
+						//Add all neighboring tiles of the current tile to an array
+						//Count all of the ones that are alive
+						neighbors[0] = grid[y][westX];
+						neighbors[1] = grid[northY][westX];
+						neighbors[2] = grid[southY][westX];
+						neighbors[3] = grid[northY][x];
+						neighbors[4] = grid[southY][x];
+						neighbors[5] = grid[y][eastX];
+						neighbors[6] = grid[northY][eastX];
+						neighbors[7] = grid[southY][eastX];
+						for(int i = 0; i < neighbors.length; i++){
+							if(neighbors[i].isAlive()){
+								numAlive++;
+							}
+						}
+						
+						//Modify the current tile based on the game rules
+						if(numAlive == 3 || (tile.isAlive() && numAlive == 2)){
+							nextGen[y][x].setState(true);
+						}
+						else{
+							nextGen[y][x].setState(false);
+						}
+					}	
+				}
+				//Assign the current generation to the new one
+				grid = nextGen;
+				paintImmediately(0, 0, WIDTH, HEIGHT);
+				try{
+					Thread.sleep(10);
+				}
+				catch(Exception exc){
+					exc.printStackTrace();
+				};
 			}
-			//Assign the current generation to the new one
-			grid = nextGen;
 		}
+		setActive(true);
+		return;
 	}
 	
 }

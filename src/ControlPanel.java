@@ -1,6 +1,12 @@
 import java.awt.event.*;
 import javax.swing.*;
 
+/**
+ * Control panel used to set up the game
+ * 
+ * @author david
+ *
+ */
 @SuppressWarnings("serial")
 public class ControlPanel extends JPanel implements ActionListener, ItemListener {
 	//The grid being controlled
@@ -42,7 +48,7 @@ public class ControlPanel extends JPanel implements ActionListener, ItemListener
 		
 		presetLabel = new JLabel("Preset configurations:");
 		add(presetLabel);
-		String[] presetList = {"Select a preset", "Glider", "Small Explosion"};
+		String[] presetList = {"Select a preset", "Glider", "Small Explosion", "Gosper Glider Gun"};
 		presets = new JComboBox<String>(presetList);
 		presets.addItemListener(this);
 		add(presets);
@@ -56,19 +62,10 @@ public class ControlPanel extends JPanel implements ActionListener, ItemListener
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if(e.getActionCommand().equals("Start game")){
-			grid.setActive(false);
 			String runs = iterations.getText();
 			int numRuns = Integer.parseInt(runs);
-			for(int i = 0; i < numRuns; i++){
-				grid.updateTiles();
-				try{
-					Thread.sleep(30);
-				}
-				catch(Exception exc){
-					exc.printStackTrace();
-				}
-			}
-			grid.setActive(true);
+			grid.setIterations(numRuns);
+			grid.updateTiles();
 		}
 		else if(e.getActionCommand().equals("Reset")){
 			grid.resetTiles();
@@ -86,8 +83,11 @@ public class ControlPanel extends JPanel implements ActionListener, ItemListener
 			if(e.getItem().equals("Glider")){
 				grid.setPreset("Glider");
 			}
-			if(e.getItem().equals("Small Explosion")){
+			else if(e.getItem().equals("Small Explosion")){
 				grid.setPreset("Small Explosion");
+			}
+			else if(e.getItem().equals("Gosper Glider Gun")){
+				grid.setPreset("Gosper Glider Gun");
 			}
 		}
 	}
