@@ -57,7 +57,6 @@ public class TileGrid extends JPanel implements MouseListener, Runnable {
 		}
 		addMouseListener(this);
 		animation = new Thread(this, "animation");
-		iterations = 50;
 	}
 	
 	/**
@@ -130,14 +129,11 @@ public class TileGrid extends JPanel implements MouseListener, Runnable {
 	}
 	
 	/**
-	 * Update the tiles around each tile that is alive (uses a separate thread for calculating each new generation)
-	 * 
-	 * 
+	 * Begin updating the tiles around each tile that is alive (uses a separate thread for calculating each new generation)
+	 *  
 	 */
 	public void updateTiles(){
-		if(!animation.isInterrupted()){
-			animation.start();
-		}
+		animation.start();
 	}
 	
 	/**
@@ -249,9 +245,8 @@ public class TileGrid extends JPanel implements MouseListener, Runnable {
 	 */
 	@Override
 	public void run() {
-		setActive(false);
-		if(!active){
-			for(int k = 0; k < iterations; k++){
+		if(!Thread.currentThread().isInterrupted()){
+			while(!active){
 				//Create a new grid to represent the next generation
 				Tile[][] nextGen = new Tile[ROWS][COLS];
 				int x1 = GRIDOFFSET;
@@ -338,8 +333,6 @@ public class TileGrid extends JPanel implements MouseListener, Runnable {
 				};
 			}
 		}
-		setActive(true);
-		return;
 	}
 	
 }

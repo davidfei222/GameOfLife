@@ -15,6 +15,11 @@ public class ControlPanel extends JPanel implements ActionListener, ItemListener
 	private JButton start;
 	//Reset button
 	private JButton reset;
+	//Resume button
+	private JButton resume;
+	//Stop button
+	private JButton stop;
+	
 	//Drop-down menu and label for presets
 	private JLabel presetLabel;
 	private JComboBox<String> presets;
@@ -34,10 +39,10 @@ public class ControlPanel extends JPanel implements ActionListener, ItemListener
 	public ControlPanel(TileGrid grid){
 		setSize(WIDTH, HEIGHT);
 		
-		itrLabel = new JLabel("Number of iterations to run:");
+		/*itrLabel = new JLabel("Number of iterations to run:");
 		add(itrLabel);
 		iterations = new JTextField("50", 5);
-		add(iterations);
+		add(iterations);*/
 		
 		start = new JButton("Start game");
 		start.addActionListener(this);
@@ -45,6 +50,12 @@ public class ControlPanel extends JPanel implements ActionListener, ItemListener
 		reset = new JButton("Reset");
 		reset.addActionListener(this);
 		add(reset);
+		resume = new JButton("Resume");
+		resume.addActionListener(this);
+		add(resume);
+		stop = new JButton("Stop");
+		stop.addActionListener(this);
+		add(stop);
 		
 		presetLabel = new JLabel("Preset configurations:");
 		add(presetLabel);
@@ -62,13 +73,19 @@ public class ControlPanel extends JPanel implements ActionListener, ItemListener
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if(e.getActionCommand().equals("Start game")){
-			String runs = iterations.getText();
-			int numRuns = Integer.parseInt(runs);
-			grid.setIterations(numRuns);
+			//String runs = iterations.getText();
+			//int numRuns = Integer.parseInt(runs);
+			//grid.setIterations(numRuns);
+			grid.setActive(false);
 			grid.updateTiles();
 		}
-		else if(e.getActionCommand().equals("Reset")){
+		else if(e.getActionCommand().equals("Resume")){
+			grid.setActive(false);
+		}
+		else if(e.getActionCommand().equals("Reset") && grid.getState()){
 			grid.resetTiles();
+		}
+		else if(e.getActionCommand().equals("Stop")){
 			grid.setActive(true);
 		}
 	}
