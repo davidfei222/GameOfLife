@@ -81,8 +81,10 @@ public class ControlPanel extends JPanel implements ActionListener, ItemListener
 		}
 		else if(e.getActionCommand().equals("Resume")){
 			grid.setActive(false);
+			grid.resume();
 		}
 		else if(e.getActionCommand().equals("Reset") && grid.getState()){
+			grid.setActive(true);
 			grid.resetTiles();
 		}
 		else if(e.getActionCommand().equals("Stop")){
