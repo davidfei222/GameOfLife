@@ -352,7 +352,7 @@ public class TileGrid extends JPanel implements MouseListener, Runnable {
 			grid = nextGen;
 			paintImmediately(0, 0, WIDTH, HEIGHT);
 			try{
-				Thread.sleep(7);
+				Thread.sleep(50);
 			}
 			catch(Exception exc){
 				exc.printStackTrace();
