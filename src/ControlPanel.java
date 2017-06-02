@@ -24,8 +24,8 @@ public class ControlPanel extends JPanel implements ActionListener, ItemListener
 	private JLabel presetLabel;
 	private JComboBox<String> presets;
 	//Text field and label for number iterations to run
-	private JLabel itrLabel;
-	private JTextField iterations;
+	//private JLabel itrLabel;
+	//private JTextField iterations;
 	
 	//Constants for size of panel
 	private static final int WIDTH = 1501;
